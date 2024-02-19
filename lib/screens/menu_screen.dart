@@ -32,6 +32,9 @@ class MenuScreen extends StatelessWidget {
               },
               child: const Text('Implicit Animations'),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             ElevatedButton(
               onPressed: () {
                 _goToPage(
