@@ -32,9 +32,6 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
   @override
   void initState() {
     super.initState();
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      print(_animationController.value);
-    });
   }
 
   @override
@@ -45,6 +42,7 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
 
   @override
   Widget build(BuildContext context) {
+    print('Building');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explicit Animations'),
@@ -53,11 +51,18 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "${_animationController.value}",
-              style: const TextStyle(
-                fontSize: 58,
-              ),
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _animationController.value,
+                  child: Container(
+                    color: Colors.amber,
+                    width: 400,
+                    height: 400,
+                  ),
+                );
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
