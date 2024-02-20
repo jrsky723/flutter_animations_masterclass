@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ImplicitAnimationsScreen extends StatefulWidget {
   const ImplicitAnimationsScreen({super.key});
@@ -21,7 +19,6 @@ class _ImplicitAnimationsScreenState extends State<ImplicitAnimationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Implicit Animations'),
