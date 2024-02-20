@@ -51,7 +51,7 @@ class MenuScreen extends StatelessWidget {
                   const AppleWatchScreen(),
                 );
               },
-              child: const Text('Applea Watch'),
+              child: const Text('Apple Watch'),
             )
           ],
         ),
