@@ -18,6 +18,23 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
       _range.value = _animationController.value;
     });
 
+  bool _looping = false;
+
+  void _toggleLooping() {
+    if (_looping) {
+      _animationController.stop();
+    } else {
+      _animationController.repeat(
+        reverse: true,
+      );
+    }
+    setState(
+      () {
+        _looping = !_looping;
+      },
+    );
+  }
+
   late final Animation<Decoration> _decoration = DecorationTween(
     begin: BoxDecoration(
       color: Colors.amber,
@@ -41,7 +58,7 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
 
   late final Animation<Offset> _position = Tween(
     begin: Offset.zero,
-    end: const Offset(0, -0.5),
+    end: const Offset(0, -0.2),
   ).animate(_curve);
 
   late final CurvedAnimation _curve = CurvedAnimation(
@@ -122,6 +139,10 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
                 ElevatedButton(
                   onPressed: _rewind,
                   child: const Text('Rewind'),
+                ),
+                ElevatedButton(
+                  onPressed: _toggleLooping,
+                  child: Text(_looping ? 'Stop' : 'Loop'),
                 ),
               ],
             ),
