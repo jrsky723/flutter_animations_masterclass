@@ -24,7 +24,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
       AnimationController(vsync: this, duration: const Duration(seconds: 20))
         ..repeat(reverse: true);
 
-  late final Animation<Offset> _marqueeTween = Tween(
+  late final Animation<Offset> _marqueeTween = Tween<Offset>(
     begin: const Offset(0.1, 0),
     end: const Offset(-0.6, 0),
   ).animate(_marqueeController);
@@ -39,7 +39,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
   late final AnimationController _menuController = AnimationController(
     vsync: this,
     duration: const Duration(
-      seconds: 5,
+      seconds: 3,
     ),
   );
 
@@ -97,7 +97,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   late final Curve _menuCurve = Curves.easeInOutCubic;
 
-  late final Animation<double> _screenScale = Tween(
+  late final Animation<double> _screenScale = Tween<double>(
     begin: 1.0,
     end: 0.7,
   ).animate(
@@ -105,21 +105,49 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
       parent: _menuController,
       curve: Interval(
         0,
-        0.5,
+        0.3,
         curve: _menuCurve,
       ),
     ),
   );
 
-  late final Animation<Offset> _screenOffset = Tween(
+  late final Animation<Offset> _screenOffset = Tween<Offset>(
     begin: Offset.zero,
     end: const Offset(0.5, 0),
   ).animate(
     CurvedAnimation(
       parent: _menuController,
       curve: Interval(
+        0.2,
+        0.4,
+        curve: _menuCurve,
+      ),
+    ),
+  );
+
+  late final Animation<double> _closeButtonOpacity = Tween<double>(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(
+        0.3,
         0.5,
-        1.0,
+        curve: _menuCurve,
+      ),
+    ),
+  );
+
+  late final Animation<Offset> _profileSlide = Tween<Offset>(
+    begin: const Offset(-1, 0),
+    end: Offset.zero,
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(
+        0.4,
+        0.7,
         curve: _menuCurve,
       ),
     ),
@@ -140,11 +168,14 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
           backgroundColor: Colors.black,
           appBar: AppBar(
             backgroundColor: Colors.black,
-            leading: IconButton(
-              onPressed: _closeMenu,
-              icon: const Icon(
-                Icons.close,
-                color: Colors.white,
+            foregroundColor: Colors.white,
+            leading: FadeTransition(
+              opacity: _closeButtonOpacity,
+              child: IconButton(
+                onPressed: _closeMenu,
+                icon: const Icon(
+                  Icons.close,
+                ),
               ),
             ),
           ),
@@ -156,23 +187,26 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                   height: 30,
                 ),
                 for (var menu in _menus) ...[
-                  Row(
-                    children: [
-                      Icon(
-                        menu["icon"],
-                        color: Colors.white,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        menu["title"],
-                        style: const TextStyle(
+                  SlideTransition(
+                    position: _profileSlide,
+                    child: Row(
+                      children: [
+                        Icon(
+                          menu["icon"],
                           color: Colors.white,
-                          fontSize: 18,
                         ),
-                      ),
-                    ],
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          menu["title"],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 30,
