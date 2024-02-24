@@ -1,9 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class MusicPlayerDetailScreen extends StatefulWidget {
   final int index;
+  final duration = const Duration(
+    minutes: 0,
+    seconds: 60,
+  );
   const MusicPlayerDetailScreen({super.key, required this.index});
 
   @override
@@ -15,7 +17,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _progressController = AnimationController(
     vsync: this,
-    duration: const Duration(minutes: 1),
+    duration: widget.duration,
   )..repeat(
       reverse: true,
     );
@@ -76,7 +78,67 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                 ),
               );
             },
-          )
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: AnimatedBuilder(
+              animation: _progressController,
+              builder: (context, child) {
+                final currentDuration =
+                    widget.duration * _progressController.value;
+                final leftDuration = widget.duration -
+                    currentDuration +
+                    const Duration(seconds: 1);
+
+                return Row(
+                  children: [
+                    Text(
+                      formatDuration(currentDuration),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      formatDuration(leftDuration),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            "Song Name",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          const Text(
+            "Album Namasdfasdfasdfasdf",
+            maxLines: 1,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey,
+            ),
+          ),
         ],
       ),
     );
@@ -137,4 +199,10 @@ class ProgressBar extends CustomPainter {
   bool shouldRepaint(covariant ProgressBar oldDelegate) {
     return oldDelegate.progressValue != progressValue;
   }
+}
+
+String formatDuration(Duration duration) {
+  final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+  final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return "$minutes:$seconds";
 }
