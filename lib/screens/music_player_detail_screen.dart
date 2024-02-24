@@ -2,11 +2,21 @@ import 'package:flutter/material.dart';
 
 class MusicPlayerDetailScreen extends StatefulWidget {
   final int index;
-  final duration = const Duration(
-    minutes: 0,
-    seconds: 60,
-  );
-  const MusicPlayerDetailScreen({super.key, required this.index});
+  final String title;
+  final String artist;
+  final String album;
+  final String year;
+  final Duration duration;
+
+  const MusicPlayerDetailScreen({
+    super.key,
+    required this.index,
+    required this.title,
+    required this.artist,
+    required this.album,
+    required this.year,
+    required this.duration,
+  });
 
   @override
   State<MusicPlayerDetailScreen> createState() =>
@@ -265,8 +275,8 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
             scale: _screenScale,
             child: Scaffold(
               appBar: AppBar(
-                title: const Text(
-                  'Song Name',
+                title: Text(
+                  widget.title,
                 ),
                 centerTitle: true,
                 actions: [
@@ -276,171 +286,179 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                   ),
                 ],
               ),
-              body: Column(
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Hero(
-                      tag: "${widget.index}",
-                      child: Container(
-                        height: 350,
-                        width: 350,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 8),
+              body: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Hero(
+                        tag: "${widget.index}",
+                        child: Container(
+                          height: 350,
+                          width: 350,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/covers/${widget.index}.jpg"),
+                              fit: BoxFit.cover,
                             ),
-                          ],
-                          image: DecorationImage(
-                            image:
-                                AssetImage("assets/covers/${widget.index}.jpg"),
-                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  AnimatedBuilder(
-                    animation: _progressController,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        size: Size(size.width - 80, 5),
-                        painter: ProgressBar(
-                          progressValue: _progressController.value,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: AnimatedBuilder(
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    AnimatedBuilder(
                       animation: _progressController,
                       builder: (context, child) {
-                        final currentDuration =
-                            widget.duration * _progressController.value;
-                        final leftDuration = widget.duration -
-                            currentDuration +
-                            const Duration(seconds: 1);
-
-                        return Row(
-                          children: [
-                            Text(
-                              formatDuration(currentDuration),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              formatDuration(leftDuration),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                        return CustomPaint(
+                          size: Size(size.width - 80, 5),
+                          painter: ProgressBar(
+                            progressValue: _progressController.value,
+                          ),
                         );
                       },
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text(
-                    "Song Name",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  SlideTransition(
-                    position: _marqueeTween,
-                    child: const Text(
-                      "Album Name - Artist Name - Year",
-                      maxLines: 1,
-                      softWrap: false,
-                      overflow: TextOverflow.visible,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  GestureDetector(
-                    onTap: _onPlayPauseTap,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AnimatedIcon(
-                          icon: AnimatedIcons.pause_play,
-                          progress: _playPauseController,
-                          size: 60,
-                        ),
-                        // LottieBuilder.asset(
-                        //   "assets/animations/play-lottie.json",
-                        //   controller: _playPauseController,
-                        //   onLoaded: (composition) {
-                        //     _playPauseController.duration = composition.duration;
-                        //   },
-                        //   width: 200,
-                        //   height: 200,
-                        // ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  GestureDetector(
-                    onHorizontalDragUpdate: _onVolumeDragUpdate,
-                    onHorizontalDragStart: (_) => _toggleDragging(),
-                    onHorizontalDragEnd: (_) => _toggleDragging(),
-                    child: AnimatedScale(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.bounceOut,
-                      scale: _dragging ? 1.1 : 1,
-                      child: Container(
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ValueListenableBuilder(
-                          valueListenable: _volume,
-                          builder: (context, value, child) {
-                            return CustomPaint(
-                              size: Size(size.width - 80, 50),
-                              painter: VolumePainter(
-                                volume: value,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: AnimatedBuilder(
+                        animation: _progressController,
+                        builder: (context, child) {
+                          final currentDuration =
+                              widget.duration * _progressController.value;
+                          final leftDuration = widget.duration -
+                              currentDuration +
+                              const Duration(seconds: 1);
+
+                          return Row(
+                            children: [
+                              Text(
+                                formatDuration(currentDuration),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey,
+                                ),
                               ),
-                            );
-                          },
+                              const Spacer(),
+                              Text(
+                                formatDuration(leftDuration),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ClipRect(
+                      child: SizedBox(
+                        width: size.width,
+                        child: SlideTransition(
+                          position: _marqueeTween,
+                          child: Text(
+                            "${widget.album} - ${widget.artist} - ${widget.year}",
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  )
-                ],
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    GestureDetector(
+                      onTap: _onPlayPauseTap,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedIcon(
+                            icon: AnimatedIcons.pause_play,
+                            progress: _playPauseController,
+                            size: 60,
+                          ),
+                          // LottieBuilder.asset(
+                          //   "assets/animations/play-lottie.json",
+                          //   controller: _playPauseController,
+                          //   onLoaded: (composition) {
+                          //     _playPauseController.duration = composition.duration;
+                          //   },
+                          //   width: 200,
+                          //   height: 200,
+                          // ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    GestureDetector(
+                      onHorizontalDragUpdate: _onVolumeDragUpdate,
+                      onHorizontalDragStart: (_) => _toggleDragging(),
+                      onHorizontalDragEnd: (_) => _toggleDragging(),
+                      child: AnimatedScale(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.bounceOut,
+                        scale: _dragging ? 1.1 : 1,
+                        child: Container(
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ValueListenableBuilder(
+                            valueListenable: _volume,
+                            builder: (context, value, child) {
+                              return CustomPaint(
+                                size: Size(size.width - 80, 50),
+                                painter: VolumePainter(
+                                  volume: value,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

@@ -3,6 +3,44 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animations_masterclass/screens/music_player_detail_screen.dart';
 
+List<Map<String, dynamic>> songs = [
+  {
+    "title": "EASY",
+    "artist": "LE SSERAFIM",
+    "album": "EASY",
+    "year": "2024",
+    "duration": const Duration(minutes: 2, seconds: 45),
+  },
+  {
+    "title": "ETA",
+    "artist": "NewJeans",
+    "album": "NewJeans 2nd EP 'Get Up'",
+    "year": "2023",
+    "duration": const Duration(minutes: 2, seconds: 32),
+  },
+  {
+    "title": "Pop Virus",
+    "artist": "Gen Hoshino",
+    "album": "POP VIRUS",
+    "year": "2018",
+    "duration": const Duration(minutes: 3, seconds: 2),
+  },
+  {
+    "title": "홀씨",
+    "artist": "아이유",
+    "album": "The Winning",
+    "year": "2024",
+    "duration": const Duration(minutes: 3, seconds: 11),
+  },
+  {
+    "title": "EARFQUAKE",
+    "artist": "Tyler, The Creator",
+    "album": "IGOR",
+    "year": "2019",
+    "duration": const Duration(minutes: 3, seconds: 11),
+  },
+];
+
 class MusicPlayerScreen extends StatefulWidget {
   const MusicPlayerScreen({super.key});
 
@@ -40,11 +78,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
           return FadeTransition(
-            opacity: animation,
-            child: MusicPlayerDetailScreen(
-              index: imageIndex,
-            ),
-          );
+              opacity: animation,
+              child: MusicPlayerDetailScreen(
+                index: imageIndex + 1,
+                title: songs[imageIndex]["title"],
+                artist: songs[imageIndex]["artist"],
+                album: songs[imageIndex]["album"],
+                year: songs[imageIndex]["year"],
+                duration: songs[imageIndex]["duration"],
+              ));
         },
       ),
     );
@@ -98,7 +140,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       final difference = (scroll - index).abs();
                       final scale = 1 - (difference * 0.1);
                       return GestureDetector(
-                        onTap: () => _onTap(index + 1),
+                        onTap: () => _onTap(index),
                         child: Hero(
                           tag: "${index + 1}",
                           child: Transform.scale(
@@ -130,9 +172,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                   const SizedBox(
                     height: 33,
                   ),
-                  const Text(
-                    'Song Name',
-                    style: TextStyle(
+                  Text(
+                    songs[index]["title"],
+                    style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,
                     ),
@@ -140,9 +182,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                   const SizedBox(
                     height: 5,
                   ),
-                  const Text(
-                    'Artist Name',
-                    style: TextStyle(
+                  Text(
+                    songs[index]["artist"],
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Colors.white,
                     ),
