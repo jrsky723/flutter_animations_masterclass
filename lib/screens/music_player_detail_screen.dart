@@ -14,17 +14,25 @@ class MusicPlayerDetailScreen extends StatefulWidget {
 }
 
 class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _progressController = AnimationController(
     vsync: this,
     duration: widget.duration,
-  )..repeat(
-      reverse: true,
-    );
+  )..repeat(reverse: true);
+
+  late final AnimationController _marqueeController =
+      AnimationController(vsync: this, duration: const Duration(seconds: 20))
+        ..repeat(reverse: true);
+
+  late final Animation<Offset> _marqueeTween = Tween(
+    begin: const Offset(0.1, 0),
+    end: const Offset(-0.6, 0),
+  ).animate(_marqueeController);
 
   @override
   void dispose() {
     _progressController.dispose();
+    _marqueeController.dispose();
     super.dispose();
   }
 
@@ -130,13 +138,17 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
           const SizedBox(
             height: 5,
           ),
-          const Text(
-            "Album Namasdfasdfasdfasdf",
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
+          SlideTransition(
+            position: _marqueeTween,
+            child: const Text(
+              "Album Name - Artist Name - Year",
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey,
+              ),
             ),
           ),
         ],
