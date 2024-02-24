@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class MusicPlayerDetailScreen extends StatefulWidget {
   final int index;
@@ -45,6 +44,29 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     }
   }
 
+  bool _dragging = false;
+
+  void _toggleDragging() {
+    setState(() {
+      _dragging = !_dragging;
+    });
+  }
+
+  final ValueNotifier<double> _volume = ValueNotifier<double>(0.0);
+
+  late final size = MediaQuery.of(context).size;
+
+  void _onVolumeDragUpdate(DragUpdateDetails details) {
+    _volume.value += details.delta.dx;
+
+    _volume.value = _volume.value.clamp(
+      0.0,
+      size.width - 80,
+    );
+  }
+
+  void _openMenu() {}
+
   @override
   void dispose() {
     _progressController.dispose();
@@ -54,10 +76,18 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Song Name'),
+        title: const Text(
+          'Song Name',
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: _openMenu,
+            icon: const Icon(Icons.menu),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -192,6 +222,36 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
               ],
             ),
           ),
+          const SizedBox(
+            height: 30,
+          ),
+          GestureDetector(
+            onHorizontalDragUpdate: _onVolumeDragUpdate,
+            onHorizontalDragStart: (_) => _toggleDragging(),
+            onHorizontalDragEnd: (_) => _toggleDragging(),
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.bounceOut,
+              scale: _dragging ? 1.1 : 1,
+              child: Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ValueListenableBuilder(
+                  valueListenable: _volume,
+                  builder: (context, value, child) {
+                    return CustomPaint(
+                      size: Size(size.width - 80, 50),
+                      painter: VolumePainter(
+                        volume: value,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -251,6 +311,36 @@ class ProgressBar extends CustomPainter {
   @override
   bool shouldRepaint(covariant ProgressBar oldDelegate) {
     return oldDelegate.progressValue != progressValue;
+  }
+}
+
+class VolumePainter extends CustomPainter {
+  final double volume;
+
+  VolumePainter({required this.volume});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bgPaint = Paint()..color = Colors.grey.shade300;
+
+    final bgRect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    canvas.drawRect(bgRect, bgPaint);
+
+    final volumePaint = Paint()..color = Colors.grey.shade500;
+
+    final volumeRect = Rect.fromLTWH(
+      0,
+      0,
+      volume,
+      size.height,
+    );
+
+    canvas.drawRect(volumeRect, volumePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant VolumePainter oldDelegate) {
+    return oldDelegate.volume != volume;
   }
 }
 
