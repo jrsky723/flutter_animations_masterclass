@@ -24,6 +24,11 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
       AnimationController(vsync: this, duration: const Duration(seconds: 20))
         ..repeat(reverse: true);
 
+  late final Animation<Offset> _marqueeTween = Tween(
+    begin: const Offset(0.1, 0),
+    end: const Offset(-0.6, 0),
+  ).animate(_marqueeController);
+
   late final AnimationController _playPauseController = AnimationController(
     vsync: this,
     duration: const Duration(
@@ -37,11 +42,6 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
       seconds: 5,
     ),
   );
-
-  late final Animation<Offset> _marqueeTween = Tween(
-    begin: const Offset(0.1, 0),
-    end: const Offset(-0.6, 0),
-  ).animate(_marqueeController);
 
   void _onPlayPauseTap() {
     if (_playPauseController.isCompleted) {
@@ -95,6 +95,36 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     },
   ];
 
+  late final Curve _menuCurve = Curves.easeInOutCubic;
+
+  late final Animation<double> _screenScale = Tween(
+    begin: 1.0,
+    end: 0.7,
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(
+        0,
+        0.5,
+        curve: _menuCurve,
+      ),
+    ),
+  );
+
+  late final Animation<Offset> _screenOffset = Tween(
+    begin: Offset.zero,
+    end: const Offset(0.5, 0),
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(
+        0.5,
+        1.0,
+        curve: _menuCurve,
+      ),
+    ),
+  );
+
   @override
   void dispose() {
     _progressController.dispose();
@@ -112,7 +142,10 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
             backgroundColor: Colors.black,
             leading: IconButton(
               onPressed: _closeMenu,
-              icon: const Icon(Icons.close),
+              icon: const Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
             ),
           ),
           body: Padding(
@@ -171,183 +204,190 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
             ),
           ),
         ),
-        Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Song Name',
-            ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                onPressed: _openMenu,
-                icon: const Icon(Icons.menu),
+        SlideTransition(
+          position: _screenOffset,
+          child: ScaleTransition(
+            scale: _screenScale,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text(
+                  'Song Name',
+                ),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    onPressed: _openMenu,
+                    icon: const Icon(Icons.menu),
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: Column(
-            children: [
-              const SizedBox(
-                height: 30,
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Hero(
-                  tag: "${widget.index}",
-                  child: Container(
-                    height: 350,
-                    width: 350,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 8),
+              body: Column(
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Hero(
+                      tag: "${widget.index}",
+                      child: Container(
+                        height: 350,
+                        width: 350,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                          image: DecorationImage(
+                            image:
+                                AssetImage("assets/covers/${widget.index}.jpg"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ],
-                      image: DecorationImage(
-                        image: AssetImage("assets/covers/${widget.index}.jpg"),
-                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              AnimatedBuilder(
-                animation: _progressController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    size: Size(size.width - 80, 5),
-                    painter: ProgressBar(
-                      progressValue: _progressController.value,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: AnimatedBuilder(
-                  animation: _progressController,
-                  builder: (context, child) {
-                    final currentDuration =
-                        widget.duration * _progressController.value;
-                    final leftDuration = widget.duration -
-                        currentDuration +
-                        const Duration(seconds: 1);
-
-                    return Row(
-                      children: [
-                        Text(
-                          formatDuration(currentDuration),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          formatDuration(leftDuration),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Song Name",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              SlideTransition(
-                position: _marqueeTween,
-                child: const Text(
-                  "Album Name - Artist Name - Year",
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.visible,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onTap: _onPlayPauseTap,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedIcon(
-                      icon: AnimatedIcons.pause_play,
-                      progress: _playPauseController,
-                      size: 60,
-                    ),
-                    // LottieBuilder.asset(
-                    //   "assets/animations/play-lottie.json",
-                    //   controller: _playPauseController,
-                    //   onLoaded: (composition) {
-                    //     _playPauseController.duration = composition.duration;
-                    //   },
-                    //   width: 200,
-                    //   height: 200,
-                    // ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onHorizontalDragUpdate: _onVolumeDragUpdate,
-                onHorizontalDragStart: (_) => _toggleDragging(),
-                onHorizontalDragEnd: (_) => _toggleDragging(),
-                child: AnimatedScale(
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.bounceOut,
-                  scale: _dragging ? 1.1 : 1,
-                  child: Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ValueListenableBuilder(
-                      valueListenable: _volume,
-                      builder: (context, value, child) {
-                        return CustomPaint(
-                          size: Size(size.width - 80, 50),
-                          painter: VolumePainter(
-                            volume: value,
-                          ),
+                  AnimatedBuilder(
+                    animation: _progressController,
+                    builder: (context, child) {
+                      return CustomPaint(
+                        size: Size(size.width - 80, 5),
+                        painter: ProgressBar(
+                          progressValue: _progressController.value,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: AnimatedBuilder(
+                      animation: _progressController,
+                      builder: (context, child) {
+                        final currentDuration =
+                            widget.duration * _progressController.value;
+                        final leftDuration = widget.duration -
+                            currentDuration +
+                            const Duration(seconds: 1);
+
+                        return Row(
+                          children: [
+                            Text(
+                              formatDuration(currentDuration),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              formatDuration(leftDuration),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         );
                       },
                     ),
                   ),
-                ),
-              )
-            ],
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    "Song Name",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  SlideTransition(
+                    position: _marqueeTween,
+                    child: const Text(
+                      "Album Name - Artist Name - Year",
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.visible,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  GestureDetector(
+                    onTap: _onPlayPauseTap,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedIcon(
+                          icon: AnimatedIcons.pause_play,
+                          progress: _playPauseController,
+                          size: 60,
+                        ),
+                        // LottieBuilder.asset(
+                        //   "assets/animations/play-lottie.json",
+                        //   controller: _playPauseController,
+                        //   onLoaded: (composition) {
+                        //     _playPauseController.duration = composition.duration;
+                        //   },
+                        //   width: 200,
+                        //   height: 200,
+                        // ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  GestureDetector(
+                    onHorizontalDragUpdate: _onVolumeDragUpdate,
+                    onHorizontalDragStart: (_) => _toggleDragging(),
+                    onHorizontalDragEnd: (_) => _toggleDragging(),
+                    child: AnimatedScale(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.bounceOut,
+                      scale: _dragging ? 1.1 : 1,
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ValueListenableBuilder(
+                          valueListenable: _volume,
+                          builder: (context, value, child) {
+                            return CustomPaint(
+                              size: Size(size.width - 80, 50),
+                              painter: VolumePainter(
+                                volume: value,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ],
