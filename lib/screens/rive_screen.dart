@@ -21,6 +21,7 @@ class _RiveScreenState extends State<RiveScreen> {
 
   void _togglePanel() {
     final input = _stateMachineController.findInput<bool>("panelActive")!;
+
     input.change(!input.value);
   }
 
