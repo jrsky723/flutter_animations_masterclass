@@ -3,6 +3,7 @@ import 'package:flutter_animations_masterclass/screens/apple_watch_screen.dart';
 import 'package:flutter_animations_masterclass/screens/explicit_animations_screen.dart';
 import 'package:flutter_animations_masterclass/screens/implicit_animations_screen.dart';
 import 'package:flutter_animations_masterclass/screens/music_player_screen.dart';
+import 'package:flutter_animations_masterclass/screens/rive_screen.dart';
 import 'package:flutter_animations_masterclass/screens/swiping_cards_screen.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -17,6 +18,22 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
+  Widget _menuButton(
+    BuildContext context,
+    Widget screen,
+    String text,
+  ) {
+    return ElevatedButton(
+      onPressed: () {
+        _goToPage(
+          context,
+          screen,
+        );
+      },
+      child: Text(text),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,52 +43,35 @@ class MenuScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                _goToPage(
-                  context,
-                  const ImplicitAnimationsScreen(),
-                );
-              },
-              child: const Text('Implicit Animations'),
+            _menuButton(
+              context,
+              const ImplicitAnimationsScreen(),
+              'Implicit Animations',
             ),
-            ElevatedButton(
-              onPressed: () {
-                _goToPage(
-                  context,
-                  const ExplicitAnimationsScreen(),
-                );
-              },
-              child: const Text(
-                'Explicit Animations',
-              ),
+            _menuButton(
+              context,
+              const ExplicitAnimationsScreen(),
+              'Explicit Animations',
             ),
-            ElevatedButton(
-              onPressed: () {
-                _goToPage(
-                  context,
-                  const AppleWatchScreen(),
-                );
-              },
-              child: const Text('Apple Watch'),
+            _menuButton(
+              context,
+              const AppleWatchScreen(),
+              'Apple Watch',
             ),
-            ElevatedButton(
-              onPressed: () {
-                _goToPage(
-                  context,
-                  const SwipingCardsScreen(),
-                );
-              },
-              child: const Text('Swipping Cards'),
+            _menuButton(
+              context,
+              const SwipingCardsScreen(),
+              'Swipping Cards',
             ),
-            ElevatedButton(
-              onPressed: () {
-                _goToPage(
-                  context,
-                  const MusicPlayerScreen(),
-                );
-              },
-              child: const Text('Music Player'),
+            _menuButton(
+              context,
+              const MusicPlayerScreen(),
+              'Music Player',
+            ),
+            _menuButton(
+              context,
+              const RiveScreen(),
+              'Rive',
             ),
           ],
         ),
