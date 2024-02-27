@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.light(
           primary: Colors.blue,
         ),
+        navigationBarTheme: const NavigationBarThemeData(
+          indicatorColor: Colors.amber,
+        ),
       ),
       home: const MenuScreen(),
     );
