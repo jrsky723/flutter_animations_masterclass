@@ -215,7 +215,7 @@ class CardDetailScreen extends StatelessWidget {
               ),
             ),
             ...[
-              for (var i in [1, 1, 1, 1, 1])
+              for (var _ in [1, 1, 1, 1, 1])
                 Container(
                   margin: const EdgeInsets.only(
                     bottom: 20,
