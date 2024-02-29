@@ -15,14 +15,17 @@ class _WalletScreenState extends State<WalletScreen> {
       appBar: AppBar(
         title: const Text('Wallet'),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(20.0),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            CreditCard(bgColor: Colors.purple),
-            CreditCard(bgColor: Colors.black),
-            CreditCard(bgColor: Colors.blue),
-          ],
+            const CreditCard(bgColor: Colors.purple),
+            const CreditCard(bgColor: Colors.black),
+            const CreditCard(bgColor: Colors.blue),
+          ]
+              .animate(interval: 500.milliseconds)
+              .fadeIn(begin: 0)
+              .slideX(begin: -1, end: 0),
         ),
       ),
     );
